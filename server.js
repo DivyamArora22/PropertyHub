@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 
 const app = express();
-const port = 80;
+const port = 8080;
 
 const NodeGeocoder = require('node-geocoder');
 
