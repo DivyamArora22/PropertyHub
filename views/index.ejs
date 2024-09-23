@@ -179,99 +179,105 @@
     <div id="propertyList"></div>
 </div>
 
+<!-- Updated Property List Display -->
 <script>
 
-// Rest of your existing JavaScript functions remain unchanged
-
     function searchProperties() {
-    const searchInput = document.getElementById('searchInput').value.trim();
-    const distance = document.getElementById('distanceFilter').value.trim();
-    const price = document.getElementById('priceFilter').value;
-    const bathrooms = document.getElementById('bathroomsFilter').value;
-    const bedrooms = document.getElementById('bedroomsFilter').value;
-    const propertyType = document.getElementById('propertyTypeInput').value;
-    const yearBuilt = document.getElementById('yearBuiltFilter').value;
+        const searchInput = document.getElementById('searchInput').value.trim();
+        const distance = document.getElementById('distanceFilter').value.trim();
+        const price = document.getElementById('priceFilter').value;
+        const bathrooms = document.getElementById('bathroomsFilter').value;
+        const bedrooms = document.getElementById('bedroomsFilter').value;
+        const propertyType = document.getElementById('propertyTypeInput').value;
+        const yearBuilt = document.getElementById('yearBuiltFilter').value;
 
-    let minPrice, maxPrice;
-    if (price.includes('+')) {
-        minPrice = price.replace('+', '').trim(); // Handle "500,000+"
-        maxPrice = NULL; // No upper limit
-    } else {
-        const prices = price.split('-').map(p => p.trim());
-        minPrice = prices[0] || NULL;
-        maxPrice = prices[1] || NULL;
-    }
+        let minPrice, maxPrice;
+        if (price.includes('+')) {
+            minPrice = price.replace('+', '').trim(); // Handle "500,000+"
+            maxPrice = null; // No upper limit
+        } else {
+            const prices = price.split('-').map(p => p.trim());
+            minPrice = prices[0] || null;
+            maxPrice = prices[1] || null;
+        }
 
+        const queryParams = new URLSearchParams({
+            search: searchInput,
+            distance: distance,
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+            bathrooms: bathrooms,
+            bedrooms: bedrooms,
+            propertyType: propertyType,
+            yearBuilt: yearBuilt
+        }).toString();
 
+        fetch(`/properties?search=${queryParams}`)
+            .then(response => response.json())
+            .then(data => {
+                let propertyList = document.getElementById('propertyList');
+                propertyList.innerHTML = '';
+                if (data.length === 0) {
+                    propertyList.innerHTML = '<p>No properties found.</p>';
+                } else {
+                    data.forEach(property => {
+                        // Create a card-like container for each property
+                        const propertyContainer = document.createElement('div');
+                        propertyContainer.classList.add('property-container');
+                        propertyContainer.style.padding = '15px';
+                        propertyContainer.style.borderRadius = '8px';
+                        propertyContainer.style.backgroundColor = '#f9f9f9';
+                        propertyContainer.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+                        propertyContainer.style.marginBottom = '20px';
 
+                        // Add property details
+                        propertyContainer.innerHTML = `
+                            <div class="property">
+                                <h3 style="font-size: 1.2rem; color: #333;"><p>${property.address}</p></h3>
+                                <p style="color: #555;">Price: $${property.price}</p>
+                                <p style="color: #555;">Square Footage: ${property.squareFootage}</p>
+                                <p style="color: #555;">Number of Bedrooms: ${property.numBedrooms}</p>
+                                <p style="color: #555;">Number of Bathrooms: ${property.numBathrooms}</p>
+                                <p style="color: #555;">Property Type: ${property.propertyType}</p>
+                                <p style="color: #555;">Year Built: ${property.yearBuilt}</p>
+                            </div>
+                        `;
 
+                        // Add the "Add to Favorites" button
+                        const favoriteButton = document.createElement('button');
+                        favoriteButton.textContent = 'Add to Favorites';
+                        favoriteButton.classList.add('button');
+                        favoriteButton.style.backgroundColor = '#00bfff';
+                        favoriteButton.style.color = 'white';
+                        favoriteButton.style.border = 'none';
+                        favoriteButton.style.borderRadius = '5px';
+                        favoriteButton.style.padding = '10px 20px';
+                        favoriteButton.style.cursor = 'pointer';
+                        favoriteButton.style.marginTop = '10px';
+                        favoriteButton.style.transition = 'background-color 0.3s ease';
 
-    const queryParams = new URLSearchParams({
-        search: searchInput,
-        distance: distance,
-	minPrice: minPrice,
-        maxPrice: maxPrice,
-        bathrooms: bathrooms,
-        bedrooms: bedrooms,
-        propertyType: propertyType,
-        yearBuilt: yearBuilt
-   }).toString();
+                        favoriteButton.addEventListener('click', () => addFavorite(property.propertyId));
 
+                        // Add hover effect for the button
+                        favoriteButton.addEventListener('mouseover', () => {
+                            favoriteButton.style.backgroundColor = '#009fd4';
+                        });
+                        favoriteButton.addEventListener('mouseout', () => {
+                            favoriteButton.style.backgroundColor = '#00bfff';
+                        });
 
-    fetch(`/properties?search=${queryParams}`)
-        .then(response => response.json())
-        .then(data => {
-            let propertyList = document.getElementById('propertyList');
-            propertyList.innerHTML = '';
-            if (data.length === 0) {
-                propertyList.innerHTML = '<p>No properties found.</p>';
-            } else {
-                data.forEach(property => {
-            // Create a container for each property and its buttons
-            const propertyContainer = document.createElement('div');
-            propertyContainer.classList.add('property-container');
+                        // Append the button to the property container
+                        propertyContainer.appendChild(favoriteButton);
 
-            // Add property details to the container
-            propertyContainer.innerHTML = `
-                <div class="property">
-                    <h3><p>${property.address}</p></h3>
-                    <p>Price: $${property.price}</p>
-                    <p>Square Footage: ${property.squareFootage}</p>
-                    <p>Number of Bedrooms: ${property.numBedrooms}</p>
-                    <p>Number of Bathrooms: ${property.numBathrooms}</p>
-                    <p>Property Type: ${property.propertyType}</p>
-                    <p>Year Built: ${property.yearBuilt}</p>
-                </div>
-            `;
-
-            // Create buttons for each property
-
-            const favoriteButton = document.createElement('button');
-            favoriteButton.textContent = 'Add to Favorites';
-            favoriteButton.classList.add('button');
-            favoriteButton.addEventListener('click', () => addFavorite(property.propertyId));
-
-            // Append buttons to the property container
-            propertyContainer.appendChild(favoriteButton);
-
-            // Append the property container to the property list
-            propertyList.appendChild(propertyContainer);
-        });
-
-
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to fetch properties');
-        });
-    }
-    
-    function redirectToUserPage(username, userid) {
-        console.log('Redirecting to user page:', username, userid);
-        const url = '/user?username=' + encodeURIComponent(username) + '&userid=' + encodeURIComponent(userid);
-        console.log('Generated URL:', url);
-        window.location.href = url;
+                        // Append the property container to the property list
+                        propertyList.appendChild(propertyContainer);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to fetch properties');
+            });
     }
 
     function addFavorite(propertyId) {
@@ -283,25 +289,21 @@
             },
             body: JSON.stringify({ userId: '<%= locals.userid %>', propertyId: propertyId })
         })
-            .then(response => {
-                if (response.ok) {
-                    // If the request is successful, alert the user
-                    alert('Property added to favorites successfully');
-                } else {
-                    // If there is an error, alert the user
-                    alert('Failed to add property to favorites Need ot Login');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // If there is an error, alert the user
-                alert('Failed to add property to favorites Need to Login');
-            });
+        .then(response => {
+            if (response.ok) {
+                alert('Property added to favorites successfully');
+            } else {
+                alert('Failed to add property to favorites. Need to login.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to add property to favorites. Need to login.');
+        });
     }
 
-    
-
 </script>
+
 
 </body>
 </html>
