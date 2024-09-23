@@ -1,6 +1,7 @@
-# PropertyHub
+# PropertyHub 
 
 ### A location-based property listing platform with advanced search and filtering options
+[Visit PropertyHub](https://propertyhub-website.onrender.com/)
 
 ## Table of Contents
 1. [Overview](#overview)
@@ -31,6 +32,9 @@
 - **Other Tools:** Docker (optional), Postman (for API testing)
 
 ## Demo
+
+### Live Demo
+[Visit PropertyHub](https://propertyhub-website.onrender.com/)
 
 ### Homepage
 ![Homepage Screenshot](docs/home.png)
