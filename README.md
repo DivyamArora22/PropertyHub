@@ -33,13 +33,13 @@
 ## Demo
 
 ### Homepage
-![Homepage Screenshot](images/home.png)
+![Homepage Screenshot](docs/home.png)
 
 ### Login Page
-![Login/ Signup Screenshot](images/login.png)
+![Login/ Signup Screenshot](docs/login.png)
 
 ### User Page
-![Search Screenshot](docs/user.png)
+![Search Screenshot](docs/profile.png)
 
 
 ## Installation
