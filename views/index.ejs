@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><a href="/">Property Hub</a></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+        }
+        .header .logo {
+            font-size: 24px;
+            background-color: #00bfff;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .button-container {
+            display: flex; /* Display buttons in a row */
+        }
+        .button {
+            padding: 10px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        /* Additional styles for other elements as per original code */
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .search-container input[type="text"],
+        .search-container select {
+            width: 80%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        .search-container p {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        
+        .login {
+            background-color: #f8f8f8;
+        }
+        
+        .username {
+            background-color: #f8f8f8;
+        }
+        
+        .property-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px; /* Add some space between property containers */
+        }
+
+        .property {
+            flex-grow: 1; /* Property details take up remaining space */
+        }
+        
+        .search-bar {
+    display: flex; /* This will align all children elements (inputs and selects) in a row */
+    /* flex-wrap: wrap; Allows the elements to wrap into the next line if the screen width is too small */
+    justify-content: space-between; /* This will add space between the elements evenly */
+    align-items: center; /* This will vertically center all items */
+    margin-top: 10px; /* Adds a little space above the search bar for clarity */
+    padding: 10px; /* Padding around the elements within the search bar */
+    background-color: #f8f8f8; /* Optional: adds a background color to the search bar */
+    border-radius: 5px; /* Optional: rounds the corners of the search bar */
+}
+
+.search-bar select, .search-bar input {
+    margin-right: 10px; /* Adds space to the right of each element */
+    padding: 8px; /* Adds padding inside the inputs and selects for better readability */
+    width: auto; /* Auto width to adjust based on the content */
+}
+
+.search-bar input[type="text"] {
+    flex-grow: 1; /* Allows the text input to grow and take available space */
+}
+
+
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <% if (typeof locals.username !== 'undefined' && locals.username !== null) { %>
+        <div class="button username" onclick="redirectToUserPage('<%= locals.username %>', '<%= locals.userid %>')"><%= locals.username %></div>
+    <% } else { %>
+        <div class="button username">    </div>
+    <% } %>
+    
+    <div class="logo">Property Hub</div>
+
+    <div class="button login" onclick="location.href='/login'">Login / Sign up</div>
+</div>
+
+<div class="search-container">
+    <input id="searchInput" type="text" placeholder="Enter Location">
+    <div class="search-bar">
+        <select name="price" id="priceFilter">
+            <option value="">Price</option>
+            <option value="0-100000">$0 - $100,000</option>
+            <option value="100000-200000">$100,000 - $200,000</option>
+            <option value="200000-300000">$200,000 - $300,000</option>
+            <option value="300000-400000">$300,000 - $400,000</option>
+            <option value="400000-500000">$400,000 - $500,000</option>
+            <option value="500000+">$500,000+</option>
+        </select>
+        <input type="number" name="distance" id="distanceFilter" placeholder="Distance in miles" required>
+        <select name="bathrooms" id="bathroomsFilter">
+            <option value="">Bathrooms</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>        
+        </select>
+        <select name="bedrooms" id="bedroomsFilter">
+            <option value="">Bedrooms</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+                            
+        </select>
+
+
+
+
+        <select id="propertyTypeInput" name="propertyType" required>
+                <option value="">Property Type</option>
+                <option value="SINGLE_FAMILY_RESIDENTIAL">Single Family Residential</option>
+                <option value="CONDO_COOP">Condo/Coop</option>
+                <option value="TOWNHOUSE">Townhouse</option>
+                <option value="MULTI_FAMILY_2_TO_4">Multi-Family (2 to 4)</option>
+                <option value="MULTI_FAMILY_5_PLUS">Multi-Family (5 or more)</option>
+        </select>
+
+        <select name="yearBuilt" id="yearBuiltFilter">
+            <option value="">Year Built</option>
+            <% for (let year = 1900; year <= 2024; year++) { %>
+                <option value="<%= year %>"><%= year %></option>
+            <% } %>
+        </select>
+    </div>
+
+    <button onclick="searchProperties()" class="button">Search</button>
+    <p>Find your future home or sell your home today!</p>
+    <div id="propertyList"></div>
+</div>
+
+<script>
+
+// Rest of your existing JavaScript functions remain unchanged
+
+    function searchProperties() {
+    const searchInput = document.getElementById('searchInput').value.trim();
+    const distance = document.getElementById('distanceFilter').value.trim();
+    const price = document.getElementById('priceFilter').value;
+    const bathrooms = document.getElementById('bathroomsFilter').value;
+    const bedrooms = document.getElementById('bedroomsFilter').value;
+    const propertyType = document.getElementById('propertyTypeInput').value;
+    const yearBuilt = document.getElementById('yearBuiltFilter').value;
+
+    let minPrice, maxPrice;
+    if (price.includes('+')) {
+        minPrice = price.replace('+', '').trim(); // Handle "500,000+"
+        maxPrice = NULL; // No upper limit
+    } else {
+        const prices = price.split('-').map(p => p.trim());
+        minPrice = prices[0] || NULL;
+        maxPrice = prices[1] || NULL;
+    }
+
+
+
+
+
+    const queryParams = new URLSearchParams({
+        search: searchInput,
+        distance: distance,
+	minPrice: minPrice,
+        maxPrice: maxPrice,
+        bathrooms: bathrooms,
+        bedrooms: bedrooms,
+        propertyType: propertyType,
+        yearBuilt: yearBuilt
+   }).toString();
+
+
+    fetch(`/properties?search=${queryParams}`)
+        .then(response => response.json())
+        .then(data => {
+            let propertyList = document.getElementById('propertyList');
+            propertyList.innerHTML = '';
+            if (data.length === 0) {
+                propertyList.innerHTML = '<p>No properties found.</p>';
+            } else {
+                data.forEach(property => {
+            // Create a container for each property and its buttons
+            const propertyContainer = document.createElement('div');
+            propertyContainer.classList.add('property-container');
+
+            // Add property details to the container
+            propertyContainer.innerHTML = `
+                <div class="property">
+                    <h3><p>${property.address}</p></h3>
+                    <p>Price: $${property.price}</p>
+                    <p>Square Footage: ${property.squareFootage}</p>
+                    <p>Number of Bedrooms: ${property.numBedrooms}</p>
+                    <p>Number of Bathrooms: ${property.numBathrooms}</p>
+                    <p>Property Type: ${property.propertyType}</p>
+                    <p>Year Built: ${property.yearBuilt}</p>
+                </div>
+            `;
+
+            // Create buttons for each property
+
+            const favoriteButton = document.createElement('button');
+            favoriteButton.textContent = 'Add to Favorites';
+            favoriteButton.classList.add('button');
+            favoriteButton.addEventListener('click', () => addFavorite(property.propertyId));
+
+            // Append buttons to the property container
+            propertyContainer.appendChild(favoriteButton);
+
+            // Append the property container to the property list
+            propertyList.appendChild(propertyContainer);
+        });
+
+
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to fetch properties');
+        });
+    }
+    
+    function redirectToUserPage(username, userid) {
+        console.log('Redirecting to user page:', username, userid);
+        const url = '/user?username=' + encodeURIComponent(username) + '&userid=' + encodeURIComponent(userid);
+        console.log('Generated URL:', url);
+        window.location.href = url;
+    }
+
+    function addFavorite(propertyId) {
+        // Make a POST request to /user/favorites endpoint with the propertyId
+        fetch('/user/favorites', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId: '<%= locals.userid %>', propertyId: propertyId })
+        })
+            .then(response => {
+                if (response.ok) {
+                    // If the request is successful, alert the user
+                    alert('Property added to favorites successfully');
+                } else {
+                    // If there is an error, alert the user
+                    alert('Failed to add property to favorites Need ot Login');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // If there is an error, alert the user
+                alert('Failed to add property to favorites Need to Login');
+            });
+    }
+
+    
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #00bfff;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            position: center;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .button-container-right {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 20px;
+        }
+        .button-container-left {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 20px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            background-color: #e3b037;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button.logout {
+            background-color: #e3b037;
+        }
+
+        .welcome-message {
+            font-size: 36px;
+            font-weight: bold;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Property Hub</div>
+        <div class="button-container-left">
+            <button class="button" onclick="backToHome()">Back to Home</button>
+        </div>
+        <div class="button-container-right">
+            <button class="button logout" onclick="logout()">Logout</button>
+        </div>
+        <div class="welcome-message">Welcome, <%= username %>!</div>
+    </div>
+    <div class="container">
+        <p>This is your user page.</p>
+        <p>You can manage your listings here.</p>
+    <button class="button" onclick="viewListings()">View Listings</button>
+    <button class="button" onclick="viewFavorites()">View Favorites</button>
+
+    <h2>Add New Listing</h2>
+    <div id="addListingForm">
+        <form onsubmit="addListing(event)">
+            <label for="price">Price:</label><br>
+            <input type="text" id="priceInput" name="price" required><br>
+            <label for="squareFootage">Square Footage:</label><br>
+            <input type="text" id="squareFootageInput" name="squareFootage" required><br>
+            <label for="numBedrooms">Number of Bedrooms:</label><br>
+            <select id="numBedroomsInput" name="numBedrooms" required>
+                <option value="">Select</option>
+                <% for (let i = 0; i <= 10; i++) { %>
+                    <option value="<%= i %>"><%= i %></option>
+                <% } %>
+            </select><br>
+            <label for="numBathrooms">Number of Bathrooms:</label><br>
+            <select id="numBathroomsInput" name="numBathrooms" required>
+                <option value="">Select</option>
+                <% for (let i = 0; i <= 10; i++) { %>
+                    <option value="<%= i %>"><%= i %></option>
+                <% } %>
+            </select><br>
+            <label for="propertyType">Property Type:</label><br>
+            <select id="propertyTypeInput" name="propertyType" required>
+                <option value="">Select</option>
+                <option value="SINGLE_FAMILY_RESIDENTIAL">Single Family Residential</option>
+                <option value="CONDO_COOP">Condo/Coop</option>
+                <option value="TOWNHOUSE">Townhouse</option>
+                <option value="MULTI_FAMILY_2_TO_4">Multi-Family (2 to 4)</option>
+                <option value="MULTI_FAMILY_5_PLUS">Multi-Family (5 or more)</option>
+            </select><br>
+            <label for="yearBuilt">Year Built:</label><br>
+            <select id="yearBuiltInput" name="yearBuilt" required>
+                <option value="">Select</option>
+                <% for (let year = 1900; year <= 2024; year++) { %>
+                    <option value="<%= year %>"><%= year %></option>
+                <% } %>
+            </select><br>
+            <label for="streetAddress">Street Address:</label><br>
+            <input type="text" id="streetAddressInput" name="streetAddress" required><br>
+            <label for="city">City:</label><br>
+            <input type="text" id="cityInput" name="city" required><br>
+            <label for="state">State:</label><br>
+            <input type="text" id="stateInput" name="state" required><br>
+            <label for="zip">Zip:</label><br>
+            <input type="text" id="zipInput" name="zip" required><br>
+            <input type="submit" value="Add Listing">
+        </form>
+    </div>
+    <h3>Your Listings</h3>
+    <div id="listingsContainer"></div>
+    <div id="updatePriceFormContainer"></div>
+    <h3>Favorite Listings</h3>
+    <div id="favoritesContainer"></div>
+
+</div>
+
+<script>
+    function addListing(event) {
+    event.preventDefault();
+
+    const price = document.getElementById('priceInput').value;
+    const squareFootage = document.getElementById('squareFootageInput').value;
+    const numBedrooms = document.getElementById('numBedroomsInput').value;
+    const numBathrooms = document.getElementById('numBathroomsInput').value;
+    const propertyType = document.getElementById('propertyTypeInput').value;
+    const yearBuilt = document.getElementById('yearBuiltInput').value;
+    
+    const streetAddress = document.getElementById('streetAddressInput').value;
+    const city = document.getElementById('cityInput').value;
+    const state = document.getElementById('stateInput').value;
+    const zip = document.getElementById('zipInput').value;
+
+    const data = {
+        price: price,
+        squareFootage: squareFootage,
+        numBedrooms: numBedrooms,
+        numBathrooms: numBathrooms,
+        propertyType: propertyType,
+        yearBuilt: yearBuilt,
+        streetAddress: streetAddress,
+        city: city,
+        state: state,
+        zip: zip
+    };
+
+    // Begin a transaction
+    fetch('/properties', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to add property');
+        }
+        return response.json();
+    })
+    .then(result => {
+        const propertyId = result.propertyId;
+        const userData = {
+            userId: '<%= userid %>',
+            propertyId: propertyId
+        };
+
+        fetch('/user/listings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to add listing to UserListings');
+            }
+            const addressData = {
+                streetAddress: streetAddress,
+                city: city,
+                state: state,
+                zipcode: zip,
+                propertyId: propertyId,
+            };
+
+            // Begin a transaction
+            fetch('/user/address', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(addressData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to add address');
+                }
+                alert('Listing added successfully');
+                // Optionally, you can perform additional actions here
+            })
+            .catch(error => {
+                console.error('Error adding address:', error);
+                // Rollback changes in Properties and UserListings tables
+                // Send request to delete added property from the database
+                
+                
+                    // Send request to delete added listing from the database
+                //fetch(`/properties/${propertyId}?userid=<%= userid %>`, {
+                //    method: 'DELETE',
+                //})
+                
+                fetch(`/user/listings/${propertyId}?userid=<%= userid %>`, {
+                    method: 'DELETE',
+                })
+                
+                .then(() => {
+                    alert('Failed to add address');
+                })
+                .catch(deleteError => {
+                    console.error('Error deleting property and listing:', deleteError);
+                    alert('Failed to add address and rollback failed');
+                });
+            });
+        })
+        .catch(error => {
+            console.error('Error adding listing to UserListings:', error);
+            alert('Failed to add listing to UserListings');
+        });
+    })
+    .catch(error => {
+        console.error('Error adding property:', error);
+        alert('Failed to add property');
+    });
+}
+
+
+function viewListings() {
+    fetch(`/user/listings?userid=<%= userid %>`)
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Failed to fetch user listings');
+        }
+    })
+    .then(data => {
+        const listingsContainer = document.getElementById('listingsContainer');
+        listingsContainer.innerHTML = ''; // Clear previous listings
+        
+        if (data.length > 0) {
+            const ul = document.createElement('ul');
+            data.forEach(property => {
+                const li = document.createElement('li');
+                li.textContent = `Property ID: ${property.propertyId}, Price: ${property.price}, Square Footage: ${property.squareFootage}, Bedrooms: ${property.numBedrooms}, Bathrooms: ${property.numBathrooms}, Type: ${property.propertyType}, Year Built: ${property.yearBuilt}`;
+                
+                // Add a delete button for each property
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = () => deleteListing(property.propertyId);
+                li.appendChild(deleteButton);
+
+                // Add an update price button for each property
+                const updatePriceButton = document.createElement('button');
+                updatePriceButton.textContent = 'Update Price';
+                updatePriceButton.onclick = () => showUpdatePriceForm(property.propertyId);
+                li.appendChild(updatePriceButton);
+                
+                ul.appendChild(li);
+            });
+            listingsContainer.appendChild(ul);
+        } else {
+            listingsContainer.innerHTML = 'You have no listings yet.';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to fetch user listings');
+    });
+}
+
+function deleteListing(propertyId) {
+    if (confirm("Are you sure you want to delete this listing?")) {
+        fetch(`/user/listings/${propertyId}?userid=<%= userid %>`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.ok) {
+                // Refresh the listings after successful deletion
+                viewListings();
+            } else {
+                throw new Error('Failed to delete listing');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to delete listing');
+        });
+    }
+}
+
+function updatePrice(event, propertyId) {
+    event.preventDefault();
+    const newPrice = event.target.elements.newPrice.value;
+    
+    fetch(`/properties/${propertyId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ price: newPrice })
+    })
+    .then(response => {
+        if (response.ok) {
+            alert('Price updated successfully');
+            // Hide the update price form
+            const formContainer = document.getElementById('updatePriceFormContainer');
+            formContainer.innerHTML = ''; // Clear the form
+            // Refresh the listings after successful update
+            viewListings();
+        } else {
+            throw new Error('Failed to update price');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update price');
+    });
+}
+
+
+function showUpdatePriceForm(propertyId) {
+    const formContainer = document.getElementById('updatePriceFormContainer');
+    formContainer.innerHTML = ''; // Clear previous form if any
+    
+    const form = document.createElement('form');
+    form.onsubmit = (event) => updatePrice(event, propertyId);
+    
+    const priceLabel = document.createElement('label');
+    priceLabel.textContent = 'New Price:';
+    form.appendChild(priceLabel);
+    
+    const priceInput = document.createElement('input');
+    priceInput.type = 'text';
+    priceInput.name = 'newPrice';
+    form.appendChild(priceInput);
+    
+    const submitButton = document.createElement('button');
+    submitButton.type = 'submit';
+    submitButton.textContent = 'Update Price';
+    form.appendChild(submitButton);
+    
+    formContainer.appendChild(form);
+}
+
+function viewFavorites() {
+    // Fetch user's favorite listings
+    fetch(`/user/favorites?userid=<%= userid %>`)
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Failed to fetch user favorites');
+        }
+    })
+    .then(data => {
+        const favoritesContainer = document.getElementById('favoritesContainer');
+        favoritesContainer.innerHTML = ''; // Clear previous favorites
+        
+        if (data.length > 0) {
+            const ul = document.createElement('ul');
+            data.forEach(property => {
+                const li = document.createElement('li');
+                li.textContent = `Property ID: ${property.propertyId}, Price: ${property.price}, Square Footage: ${property.squareFootage}, Bedrooms: ${property.numBedrooms}, Bathrooms: ${property.numBathrooms}, Type: ${property.propertyType}, Year Built: ${property.yearBuilt}`;
+                
+                // Add a delete button for each property in favorites
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = () => deleteFromFavorites(property.propertyId);
+                li.appendChild(deleteButton);
+                
+                ul.appendChild(li);
+            });
+            favoritesContainer.appendChild(ul);
+        } else {
+            favoritesContainer.innerHTML = 'You have no favorite listings yet.';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to fetch user favorites');
+    });
+}
+
+function deleteFromFavorites(propertyId) {
+    if (confirm("Are you sure you want to remove this property from favorites?")) {
+        fetch(`/user/favorites/${propertyId}?userid=<%= userid %>`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.ok) {
+                // Refresh the favorites after successful deletion
+                viewFavorites();
+            } else {
+                throw new Error('Failed to remove property from favorites');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to remove property from favorites');
+        });
+    }
+}
+
+
+
+        function logout() {
+            // Perform logout actions here
+            alert('Logging out...');
+            // Redirect to homepage
+            window.location.href = '/';
+        }
+
+        function backToHome() {
+            // Redirect to home page with username in URL
+            window.location.href = '/?username=<%= username %>&userid=<%= userid %>';
+        }
+</script>
+</body>
+</html>
