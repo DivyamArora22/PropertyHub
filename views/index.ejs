@@ -280,6 +280,13 @@
             });
     }
 
+    function redirectToUserPage(username, userid) {
+        console.log('Redirecting to user page:', username, userid);
+        const url = '/user?username=' + encodeURIComponent(username) + '&userid=' + encodeURIComponent(userid);
+        console.log('Generated URL:', url);
+        window.location.href = url;
+    }
+
     function addFavorite(propertyId) {
         // Make a POST request to /user/favorites endpoint with the propertyId
         fetch('/user/favorites', {
@@ -304,6 +311,3 @@
 
 </script>
 
-
-</body>
-</html>

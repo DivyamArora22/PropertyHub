@@ -9,6 +9,8 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f4f4f9; /* Light background for a clean look */
+            color: #333;
         }
 
         .header {
@@ -17,56 +19,147 @@
             text-align: center;
             padding: 20px 0;
             position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .logo {
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 10px;
-            position: center;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
         }
 
-        .button-container-right {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            right: 20px;
-        }
+        .button-container-right,
         .button-container-left {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
+        }
+
+        .button-container-left {
             left: 20px;
+        }
+
+        .button-container-right {
+            right: 20px;
         }
 
         .button {
             padding: 10px 20px;
-            margin-right: 10px;
-            background-color: #e3b037;
+            background-color: #b5b5b5;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
         }
 
-        .button.logout {
-            background-color: #e3b037;
+        .button:hover {
+            background-color: #e68a00;
         }
 
         .welcome-message {
             font-size: 36px;
             font-weight: bold;
-            margin-top: 60px;
-            text-align: center;
+            margin: 60px 0 20px;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2, h3 {
+            color: #00bfff;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #00bfff;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        input[type="submit"],
+        button {
+            margin-top: 15px;
+            width: 100%;
+            background-color: #00bfff;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover,
+        button:hover {
+            background-color: #008ecc;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        li {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        li button {
+            background-color: #ff5722;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            border-radius: 5px;
+            color: white;
+            border: none;
+            margin-left: 10px;
+        }
+
+        li button:hover {
+            background-color: #e64a19;
+        }
+
+        /* Styling for smaller screens */
+        @media (max-width: 768px) {
+            .button-container-left, .button-container-right {
+                top: auto;
+                bottom: 10px;
+                transform: none;
+            }
+            .welcome-message {
+                font-size: 28px;
+                margin: 40px 0 20px;
+            }
+            .container {
+                width: 90%;
+            }
         }
     </style>
 </head>
@@ -81,67 +174,78 @@
         </div>
         <div class="welcome-message">Welcome, <%= username %>!</div>
     </div>
+
     <div class="container">
-        <p>This is your user page.</p>
-        <p>You can manage your listings here.</p>
-    <button class="button" onclick="viewListings()">View Listings</button>
-    <button class="button" onclick="viewFavorites()">View Favorites</button>
+        <h3>Manage Listings</h3>
+        
+        <button class="button" onclick="viewListings()">View Listings</button>
+        <button class="button" onclick="viewFavorites()">View Favorites</button>
 
-    <h2>Add New Listing</h2>
-    <div id="addListingForm">
-        <form onsubmit="addListing(event)">
-            <label for="price">Price:</label><br>
-            <input type="text" id="priceInput" name="price" required><br>
-            <label for="squareFootage">Square Footage:</label><br>
-            <input type="text" id="squareFootageInput" name="squareFootage" required><br>
-            <label for="numBedrooms">Number of Bedrooms:</label><br>
-            <select id="numBedroomsInput" name="numBedrooms" required>
-                <option value="">Select</option>
-                <% for (let i = 0; i <= 10; i++) { %>
-                    <option value="<%= i %>"><%= i %></option>
-                <% } %>
-            </select><br>
-            <label for="numBathrooms">Number of Bathrooms:</label><br>
-            <select id="numBathroomsInput" name="numBathrooms" required>
-                <option value="">Select</option>
-                <% for (let i = 0; i <= 10; i++) { %>
-                    <option value="<%= i %>"><%= i %></option>
-                <% } %>
-            </select><br>
-            <label for="propertyType">Property Type:</label><br>
-            <select id="propertyTypeInput" name="propertyType" required>
-                <option value="">Select</option>
-                <option value="SINGLE_FAMILY_RESIDENTIAL">Single Family Residential</option>
-                <option value="CONDO_COOP">Condo/Coop</option>
-                <option value="TOWNHOUSE">Townhouse</option>
-                <option value="MULTI_FAMILY_2_TO_4">Multi-Family (2 to 4)</option>
-                <option value="MULTI_FAMILY_5_PLUS">Multi-Family (5 or more)</option>
-            </select><br>
-            <label for="yearBuilt">Year Built:</label><br>
-            <select id="yearBuiltInput" name="yearBuilt" required>
-                <option value="">Select</option>
-                <% for (let year = 1900; year <= 2024; year++) { %>
-                    <option value="<%= year %>"><%= year %></option>
-                <% } %>
-            </select><br>
-            <label for="streetAddress">Street Address:</label><br>
-            <input type="text" id="streetAddressInput" name="streetAddress" required><br>
-            <label for="city">City:</label><br>
-            <input type="text" id="cityInput" name="city" required><br>
-            <label for="state">State:</label><br>
-            <input type="text" id="stateInput" name="state" required><br>
-            <label for="zip">Zip:</label><br>
-            <input type="text" id="zipInput" name="zip" required><br>
-            <input type="submit" value="Add Listing">
-        </form>
+        <h2>Add New Listing</h2>
+        <div id="addListingForm">
+            <form onsubmit="addListing(event)">
+                <label for="price">Price:</label>
+                <input type="text" id="priceInput" name="price" required>
+
+                <label for="squareFootage">Square Footage:</label>
+                <input type="text" id="squareFootageInput" name="squareFootage" required>
+
+                <label for="numBedrooms">Number of Bedrooms:</label>
+                <select id="numBedroomsInput" name="numBedrooms" required>
+                    <option value="">Select</option>
+                    <% for (let i = 0; i <= 10; i++) { %>
+                        <option value="<%= i %>"><%= i %></option>
+                    <% } %>
+                </select>
+
+                <label for="numBathrooms">Number of Bathrooms:</label>
+                <select id="numBathroomsInput" name="numBathrooms" required>
+                    <option value="">Select</option>
+                    <% for (let i = 0; i <= 10; i++) { %>
+                        <option value="<%= i %>"><%= i %></option>
+                    <% } %>
+                </select>
+
+                <label for="propertyType">Property Type:</label>
+                <select id="propertyTypeInput" name="propertyType" required>
+                    <option value="">Select</option>
+                    <option value="SINGLE_FAMILY_RESIDENTIAL">Single Family Residential</option>
+                    <option value="CONDO_COOP">Condo/Coop</option>
+                    <option value="TOWNHOUSE">Townhouse</option>
+                    <option value="MULTI_FAMILY_2_TO_4">Multi-Family (2 to 4)</option>
+                    <option value="MULTI_FAMILY_5_PLUS">Multi-Family (5 or more)</option>
+                </select>
+
+                <label for="yearBuilt">Year Built:</label>
+                <select id="yearBuiltInput" name="yearBuilt" required>
+                    <option value="">Select</option>
+                    <% for (let year = 1900; year <= 2024; year++) { %>
+                        <option value="<%= year %>"><%= year %></option>
+                    <% } %>
+                </select>
+
+                <label for="streetAddress">Street Address:</label>
+                <input type="text" id="streetAddressInput" name="streetAddress" required>
+
+                <label for="city">City:</label>
+                <input type="text" id="cityInput" name="city" required>
+
+                <label for="state">State:</label>
+                <input type="text" id="stateInput" name="state" required>
+
+                <label for="zip">Zip:</label>
+                <input type="text" id="zipInput" name="zip" required>
+
+                <input type="submit" value="Add Listing">
+            </form>
+        </div>
+
+        <h3>Your Listings</h3>
+        <div id="listingsContainer"></div>
+
+        <h3>Favorite Listings</h3>
+        <div id="favoritesContainer"></div>
     </div>
-    <h3>Your Listings</h3>
-    <div id="listingsContainer"></div>
-    <div id="updatePriceFormContainer"></div>
-    <h3>Favorite Listings</h3>
-    <div id="favoritesContainer"></div>
-
-</div>
 
 <script>
     function addListing(event) {
