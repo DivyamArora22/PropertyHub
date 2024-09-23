@@ -374,7 +374,7 @@ app.post('/user/address', async (req, res) => {
         res.status(500).json({ error: 'Error getting coordinates' });
     }
 });
-
+ 
 
 app.get('/user/favorites', (req, res) => {
     const userId = req.query.userid; // Retrieve userId from query string if available
